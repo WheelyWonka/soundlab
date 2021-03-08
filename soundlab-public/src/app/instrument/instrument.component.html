@@ -1,0 +1,48 @@
+<div
+  *ngIf="config$ | async as config"
+  id="container"
+  [style.width]="config.dimensions.width + 'px'"
+  [style.height]="config.dimensions.height + 'px'"
+  [style.background-image]="'url(' + config.background.url + ')'"
+  [style.background-position]="
+    config.background.position.x + 'px ' + config.background.position.y + 'px'
+  "
+  [style.background-size]="
+    config.background.dimensions.width +
+    'px ' +
+    config.background.dimensions.height +
+    'px'
+  "
+>
+  <div
+    *ngFor="let part of config.parts"
+    class="part"
+    [id]="part.id"
+    [style.width]="
+      convertPixelToPercentage(
+        part.animation.dimensions.width,
+        config.dimensions.width
+      )
+    "
+    [style.height]="
+      convertPixelToPercentage(
+        part.animation.dimensions.height,
+        config.dimensions.height
+      )
+    "
+    [style.top]="
+      convertPixelToPercentage(
+        part.animation.position.x,
+        config.dimensions.height
+      )
+    "
+    [style.left]="
+      convertPixelToPercentage(
+        part.animation.position.y,
+        config.dimensions.width
+      )
+    "
+    [style.background-image]="'url(' + part.animation.url + ')'"
+    (click)="trigger(part.id)"
+  ></div>
+</div>

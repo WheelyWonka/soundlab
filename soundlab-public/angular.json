@@ -31,9 +31,12 @@
               "src/assets"
             ],
             "styles": [
+              "node_modules/bootstrap/dist/css/bootstrap-grid.css",
               "src/styles.less"
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/preloadjs/lib/preloadjs.min.js"
+            ]
           },
           "configurations": {
             "production": {

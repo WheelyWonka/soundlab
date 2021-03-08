@@ -1,0 +1,79 @@
+{
+  "label": "Drum kit",
+  "dimensions": {
+    "width": 960,
+    "height": 540
+  },
+  "background": {
+    "url": "images/background.png",
+    "dimensions": {
+      "width": 960,
+      "height": 540
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  "parts": [{
+    "id": "aigu",
+    "notes": [{
+      "code": "a",
+      "url": "sounds/a.wav"
+    }],
+    "animation": {
+      "url": "images/tom-aigu.png",
+      "duration": 1000,
+      "frameRate": 11,
+      "frameAmount": 11,
+      "dimensions": {
+        "width": 200,
+        "height": 200
+      },
+      "position": {
+        "x": 60,
+        "y": 378
+      }
+    }
+  }, {
+    "id": "medium",
+    "notes": [{
+      "code": "s",
+      "url": "sounds/b.wav"
+    }],
+    "animation": {
+      "url": "images/tom-medium.png",
+      "duration": 1000,
+      "frameRate": 11,
+      "frameAmount": 11,
+      "dimensions": {
+        "width": 200,
+        "height": 200
+      },
+      "position": {
+        "x": 135,
+        "y": 255
+      }
+    }
+  }, {
+    "id": "bass",
+    "notes": [{
+      "code": "d",
+      "url": "sounds/c.wav"
+    }],
+    "animation": {
+      "url": "images/tom-bass.png",
+      "duration": 1000,
+      "frameRate": 11,
+      "frameAmount": 11,
+      "dimensions": {
+        "width": 200,
+        "height": 200
+      },
+      "position": {
+        "x": -40,
+        "y": 514
+      }
+    }
+  }]
+}
