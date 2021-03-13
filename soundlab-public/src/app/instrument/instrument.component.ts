@@ -1,9 +1,19 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { InstrumentConfig, InstrumentPart } from '../classes/Interfaces';
-import { interval, Observable, Subject } from 'rxjs';
+import { AfterViewInit, Component, Input, OnInit } from '@angular/core';
+import { Instrument, InstrumentPart } from '../classes/Interfaces';
+import {
+  fromEvent,
+  interval,
+  merge,
+  Observable,
+  Subject,
+  Subscription,
+  timer,
+} from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Unsubscriber } from '../classes/Unsubscriber';
 import {
+  distinctUntilChanged,
+  filter,
   map,
   switchMap,
   take,
@@ -18,12 +28,21 @@ import { getInstrumentConfigPath } from '../shared/Helpers';
   templateUrl: './instrument.component.html',
   styleUrls: ['./instrument.component.less'],
 })
-export class InstrumentComponent extends Unsubscriber implements OnInit {
+export class InstrumentComponent
+  extends Unsubscriber
+  implements OnInit, AfterViewInit {
   @Input() configUrl: string | undefined;
 
-  config$ = new Observable<InstrumentConfig>();
+  instrument$ = new Observable<Instrument>();
 
-  stopAnimation$ = new Subject<void>();
+  private readonly keyDowns$ = fromEvent(document, 'keydown').pipe(
+    map((event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      return event;
+    })
+  );
+  private readonly keyUps$ = fromEvent(document, 'keyup');
 
   constructor(private httpClient: HttpClient) {
     super();
@@ -32,20 +51,23 @@ export class InstrumentComponent extends Unsubscriber implements OnInit {
   ngOnInit(): void {
     if (!this.configUrl) throw new Error('No config found for instrument');
 
-    this.config$ = this.loadConfig(this.configUrl);
+    // Build instrument with the loaded config
+    this.instrument$ = this.loadConfig(this.configUrl);
+  }
+
+  ngAfterViewInit(): void {
+    this.triggers$().subscribe();
   }
 
   /**
    * Load config and convert it to a InstrumentConfig typed object
-   * @param configUrl
-   * @private
    */
-  private loadConfig(configUrl: string): Observable<InstrumentConfig> {
+  private loadConfig(configUrl: string): Observable<Instrument> {
     return this.httpClient.get(configUrl as string).pipe(
       map((instrumentConfig) =>
         this.getInstrumentConfigWithPrefixedUrl(
           configUrl,
-          instrumentConfig as InstrumentConfig
+          instrumentConfig as Instrument
         )
       ),
       take(1)
@@ -54,14 +76,11 @@ export class InstrumentComponent extends Unsubscriber implements OnInit {
 
   /**
    * Modifies the given instrument config to add path prefix to all available urls
-   * @param instrumentConfigUrl
-   * @param instrumentConfig
-   * @private
    */
   private getInstrumentConfigWithPrefixedUrl(
     instrumentConfigUrl: string,
-    instrumentConfig: InstrumentConfig
-  ): InstrumentConfig {
+    instrumentConfig: Instrument
+  ): Instrument {
     const pathPrefix = getInstrumentConfigPath(instrumentConfigUrl);
     instrumentConfig.background.url = `${pathPrefix}${instrumentConfig.background.url}`;
     instrumentConfig.parts.forEach((part) => {
@@ -76,36 +95,48 @@ export class InstrumentComponent extends Unsubscriber implements OnInit {
 
   /**
    * Convert a given pixel position in % according to its container
-   * @param toConvert
-   * @param base
    */
   convertPixelToPercentage(toConvert: number, base: number): string {
     return (toConvert * 100) / base + '%';
   }
 
-  trigger(id: string): void {
-    const element = document.getElementById(id);
-    this.instrumentPartForId$(id)
-      .pipe(
-        tap(() => this.stopAnimation$.next()),
-        switchMap((instrumentPart) =>
-          this.animation$(element as HTMLElement, instrumentPart)
-        )
-      )
-      .subscribe();
-  }
-
-  private instrumentPartForId$(id: string): Observable<InstrumentPart> {
-    return this.config$.pipe(
-      map(
-        (instrumentConfig) =>
-          instrumentConfig.parts.find(
-            (part) => part.id === id
-          ) as InstrumentPart
+  /**
+   * Register triggers for all parts of the instrument.
+   */
+  private triggers$(): Observable<Subscription[]> {
+    return this.instrument$.pipe(
+      map((instrument) =>
+        instrument.parts.map((part) => this.subscribeToTriggers(part))
       )
     );
   }
 
+  /**
+   * Subscribe to triggers (clicks and keys) for the given instrument part
+   * and launch the animation when trigger happens.
+   */
+  private subscribeToTriggers(instrumentPart: InstrumentPart): Subscription {
+    const element = document.getElementById(instrumentPart.id) as HTMLElement;
+    return merge(
+      fromEvent(element, 'click'),
+      ...instrumentPart.notes.map((note) =>
+        merge(this.keyDowns$, this.keyUps$).pipe(
+          map((event) => event as KeyboardEvent),
+          filter((event) => event.key === note.code),
+          distinctUntilChanged(
+            (previous, current) => previous.type === current.type
+          ),
+          filter((event) => event.type === 'keydown')
+        )
+      )
+    )
+      .pipe(switchMap(() => this.animation$(element, instrumentPart)))
+      .subscribe();
+  }
+
+  /**
+   * Return the animation for the given element and instrument part.
+   */
   private animation$(
     element: HTMLElement,
     instrumentPart: InstrumentPart
@@ -119,8 +150,7 @@ export class InstrumentComponent extends Unsubscriber implements OnInit {
       tap(
         (tick) =>
           (element.style.backgroundPositionX = -(tick * frameWidth) + 'px')
-      ),
-      takeUntil(this.stopAnimation$)
+      )
     );
   }
 }

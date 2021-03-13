@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { map, tap } from 'rxjs/operators';
-import { InstrumentConfig, InstrumentPart } from '../classes/Interfaces';
+import { Instrument, InstrumentPart } from '../classes/Interfaces';
 import { BehaviorSubject, Observable, zip } from 'rxjs';
 import { getInstrumentConfigPath } from '../shared/Helpers';
 declare const createjs: any;
@@ -42,7 +42,7 @@ export class PreloadService {
           map((instrumentConfig) =>
             this.flattenUrlsFromInstrumentConfig(
               url,
-              instrumentConfig as InstrumentConfig
+              instrumentConfig as Instrument
             )
           )
         )
@@ -65,7 +65,7 @@ export class PreloadService {
    */
   private flattenUrlsFromInstrumentConfig(
     instrumentConfigUrl: string,
-    instrumentConfig: InstrumentConfig
+    instrumentConfig: Instrument
   ): string[] {
     const uniqueUrlsSet = new Set([
       instrumentConfig.background.url,

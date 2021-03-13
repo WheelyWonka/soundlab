@@ -1,5 +1,5 @@
 <div
-  *ngIf="config$ | async as config"
+  *ngIf="instrument$ | async as config"
   id="container"
   [style.width]="config.dimensions.width + 'px'"
   [style.height]="config.dimensions.height + 'px'"
@@ -43,6 +43,5 @@
       )
     "
     [style.background-image]="'url(' + part.animation.url + ')'"
-    (click)="trigger(part.id)"
   ></div>
 </div>
