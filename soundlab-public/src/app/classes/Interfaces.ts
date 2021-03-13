@@ -1,4 +1,6 @@
-export interface InstrumentConfig {
+import { Observable } from 'rxjs';
+
+export interface Instrument {
   label: string;
   dimensions: Dimensions;
   background: Background;
@@ -8,7 +10,7 @@ export interface InstrumentConfig {
 export interface InstrumentPart {
   id: string;
   notes: Note[];
-  animation: Animation;
+  animation: AnimationConfig;
 }
 
 export interface Background {
@@ -34,7 +36,7 @@ export interface Note {
   file?: {};
 }
 
-export interface Animation {
+export interface AnimationConfig {
   url: string;
   file?: {};
   duration: number;
