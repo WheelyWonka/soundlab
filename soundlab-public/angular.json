@@ -126,6 +126,10 @@
               "devServerTarget": "soundlab-public:serve:production"
             }
           }
+        },
+        "deploy": {
+          "builder": "angular-cli-ghpages:deploy",
+          "options": {}
         }
       }
     }
