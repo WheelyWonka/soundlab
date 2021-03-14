@@ -151,7 +151,13 @@ export class InstrumentComponent
     )
       .pipe(
         map((event) => event as KeyboardEvent),
-        tap((event) => this.playSound(event)),
+        tap((event) => {
+          if (event.key) {
+            this.playSoundForKey(event.key);
+          } else {
+            this.playSoundForClick(element);
+          }
+        }),
         switchMap(() => this.animation$(element, instrumentPart))
       )
       .subscribe();
@@ -177,9 +183,29 @@ export class InstrumentComponent
     );
   }
 
-  private playSound(event: KeyboardEvent): void {
-    this.audios[event.key].pause();
-    this.audios[event.key].currentTime = 0;
-    this.audios[event.key].play();
+  /**
+   * Play the sound matching the given key.
+   */
+  private playSoundForKey(key: string): void {
+    if (this.audios[key]) {
+      this.audios[key].pause();
+      this.audios[key].currentTime = 0;
+      this.audios[key].play();
+    }
+  }
+
+  /**
+   * One day it will use octave setting to target the right note but for now we
+   * will trigger the first sound available for the given element.
+   */
+  private playSoundForClick(element: HTMLElement): void {
+    this.instrument$
+      .pipe(
+        map((instrument) => instrument.parts),
+        map((parts) => parts.find((part) => part.id === element.id)),
+        tap((part) => (part ? this.playSoundForKey(part.notes[0].code) : null)),
+        take(1)
+      )
+      .subscribe();
   }
 }
