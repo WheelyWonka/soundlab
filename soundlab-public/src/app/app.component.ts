@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { PreloadService } from './services/preload.service';
 import { fromEvent } from 'rxjs';
 import { map, pluck, startWith, tap } from 'rxjs/operators';
+import { getGithubPagesRootFolderPrefix } from './shared/Helpers';
 
 @Component({
   selector: 'app-root',
@@ -9,9 +10,15 @@ import { map, pluck, startWith, tap } from 'rxjs/operators';
   styleUrls: ['./app.component.less'],
 })
 export class AppComponent {
-  preloadProgress$ = this.preloadService.progress;
+  readonly instruments: {
+    [key in string]: string;
+  } = {
+    drumkit: `${getGithubPagesRootFolderPrefix()}/assets/instruments/drumkit/config.json`,
+  };
 
-  browserHeight$ = fromEvent(window, 'resize').pipe(
+  readonly preloadProgress$ = this.preloadService.progress;
+
+  readonly browserHeight$ = fromEvent(window, 'resize').pipe(
     map((event) => event.target as Window),
     map((window) => window.innerHeight + 'px'),
     startWith(window.innerHeight + 'px')

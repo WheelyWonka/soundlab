@@ -1,29 +1,21 @@
 import { AfterViewInit, Component, Input, OnInit } from '@angular/core';
-import { Instrument, InstrumentPart, Note } from '../classes/Interfaces';
-import {
-  EMPTY,
-  empty,
-  fromEvent,
-  interval,
-  merge,
-  Observable,
-  Subscription,
-} from 'rxjs';
+import { Instrument, InstrumentPart } from '../classes/Interfaces';
+import { fromEvent, interval, merge, Observable, Subscription } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Unsubscriber } from '../classes/Unsubscriber';
 import {
-  debounceTime,
   distinctUntilChanged,
   filter,
   map,
-  mapTo,
   switchMap,
   take,
-  takeUntil,
   takeWhile,
   tap,
 } from 'rxjs/operators';
-import { getInstrumentConfigPath } from '../shared/Helpers';
+import {
+  getGithubPagesRootFolderPrefix,
+  getInstrumentConfigPath,
+} from '../shared/Helpers';
 
 @Component({
   selector: 'app-instrument',
@@ -93,7 +85,9 @@ export class InstrumentComponent
     instrumentConfigUrl: string,
     instrumentConfig: Instrument
   ): Instrument {
-    const pathPrefix = getInstrumentConfigPath(instrumentConfigUrl);
+    const pathPrefix = `${getGithubPagesRootFolderPrefix()}${getInstrumentConfigPath(
+      instrumentConfigUrl
+    )}`;
     instrumentConfig.background.url = `${pathPrefix}${instrumentConfig.background.url}`;
     instrumentConfig.parts.forEach((part) => {
       part.animation.url = `${pathPrefix}${part.animation.url}`;

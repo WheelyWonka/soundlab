@@ -7,7 +7,7 @@
     [style.height]="browserHeight$ | async"
   >
     <app-instrument
-      configUrl="/assets/instruments/drumkit/config.json"
+      [configUrl]="instruments.drumkit"
       class="d-block"
     ></app-instrument>
   </div>

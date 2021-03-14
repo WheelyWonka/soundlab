@@ -4,6 +4,7 @@
 
 export const environment = {
   production: false,
+  githubPagesRootPath: '/soundlab',
   instrumentConfigs: ['assets/instruments/drumkit/config.json'],
 };
 
