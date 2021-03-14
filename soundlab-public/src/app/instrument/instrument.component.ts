@@ -4,18 +4,17 @@ import { fromEvent, interval, merge, Observable, Subscription } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Unsubscriber } from '../classes/Unsubscriber';
 import {
+  debounceTime,
   distinctUntilChanged,
   filter,
   map,
   switchMap,
   take,
+  takeUntil,
   takeWhile,
   tap,
 } from 'rxjs/operators';
-import {
-  getGithubPagesRootFolderPrefix,
-  getInstrumentConfigPath,
-} from '../shared/Helpers';
+import { getInstrumentConfigPath } from '../shared/Helpers';
 
 @Component({
   selector: 'app-instrument',
@@ -109,6 +108,7 @@ export class InstrumentComponent
    */
   private initInstrumentParts$(): Observable<InstrumentPart[]> {
     return this.instrument$.pipe(
+      debounceTime(1),
       map((instrument) =>
         instrument.parts.map((part) => {
           // Add notes to the audios library.
@@ -118,7 +118,8 @@ export class InstrumentComponent
           this.subscribeToTriggers(part);
           return part;
         })
-      )
+      ),
+      takeUntil(this.unsubscribe$)
     );
   }
 
