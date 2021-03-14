@@ -1,20 +1,22 @@
 import { AfterViewInit, Component, Input, OnInit } from '@angular/core';
-import { Instrument, InstrumentPart } from '../classes/Interfaces';
+import { Instrument, InstrumentPart, Note } from '../classes/Interfaces';
 import {
+  EMPTY,
+  empty,
   fromEvent,
   interval,
   merge,
   Observable,
-  Subject,
   Subscription,
-  timer,
 } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Unsubscriber } from '../classes/Unsubscriber';
 import {
+  debounceTime,
   distinctUntilChanged,
   filter,
   map,
+  mapTo,
   switchMap,
   take,
   takeUntil,
@@ -35,6 +37,11 @@ export class InstrumentComponent
 
   instrument$ = new Observable<Instrument>();
 
+  private audios: { [key in string]: HTMLAudioElement } = {};
+
+  /**
+   * Capture key down events and stop propagation of them
+   */
   private readonly keyDowns$ = fromEvent(document, 'keydown').pipe(
     map((event) => {
       event.preventDefault();
@@ -42,6 +49,10 @@ export class InstrumentComponent
       return event;
     })
   );
+
+  /**
+   * Capture key up events
+   */
   private readonly keyUps$ = fromEvent(document, 'keyup');
 
   constructor(private httpClient: HttpClient) {
@@ -56,13 +67,14 @@ export class InstrumentComponent
   }
 
   ngAfterViewInit(): void {
-    this.triggers$().subscribe();
+    this.initInstrumentParts$().subscribe();
   }
 
   /**
    * Load config and convert it to a InstrumentConfig typed object
    */
   private loadConfig(configUrl: string): Observable<Instrument> {
+    // Todo: Why http get is trigger twice ??
     return this.httpClient.get(configUrl as string).pipe(
       map((instrumentConfig) =>
         this.getInstrumentConfigWithPrefixedUrl(
@@ -103,10 +115,17 @@ export class InstrumentComponent
   /**
    * Register triggers for all parts of the instrument.
    */
-  private triggers$(): Observable<Subscription[]> {
+  private initInstrumentParts$(): Observable<InstrumentPart[]> {
     return this.instrument$.pipe(
       map((instrument) =>
-        instrument.parts.map((part) => this.subscribeToTriggers(part))
+        instrument.parts.map((part) => {
+          // Add notes to the audios library.
+          part.notes.forEach(
+            (note) => (this.audios[note.code] = new Audio(note.url))
+          );
+          this.subscribeToTriggers(part);
+          return part;
+        })
       )
     );
   }
@@ -130,7 +149,11 @@ export class InstrumentComponent
         )
       )
     )
-      .pipe(switchMap(() => this.animation$(element, instrumentPart)))
+      .pipe(
+        map((event) => event as KeyboardEvent),
+        tap((event) => this.playSound(event)),
+        switchMap(() => this.animation$(element, instrumentPart))
+      )
       .subscribe();
   }
 
@@ -152,5 +175,11 @@ export class InstrumentComponent
           (element.style.backgroundPositionX = -(tick * frameWidth) + 'px')
       )
     );
+  }
+
+  private playSound(event: KeyboardEvent): void {
+    this.audios[event.key].pause();
+    this.audios[event.key].currentTime = 0;
+    this.audios[event.key].play();
   }
 }
