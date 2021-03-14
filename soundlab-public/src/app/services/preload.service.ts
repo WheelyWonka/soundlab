@@ -30,7 +30,6 @@ export class PreloadService {
 
   /**
    * Observable that returns the array of all links to preload.
-   * @private
    */
   private buildManifest(): Observable<string[]> {
     const instrumentConfigsUrls = environment.instrumentConfigs;
@@ -59,9 +58,6 @@ export class PreloadService {
 
   /**
    * Get all inks from a given instrument config
-   * @param instrumentConfigUrl
-   * @param instrumentConfig
-   * @private
    */
   private flattenUrlsFromInstrumentConfig(
     instrumentConfigUrl: string,

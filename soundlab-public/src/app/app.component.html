@@ -1,8 +1,11 @@
-<div class="container-fluid h-100 pt-5">
+<div class="container-fluid">
   <div class="row align-items-center justify-content-center d-none">
     {{ preloadProgress$ | async }}
   </div>
-  <div class="row align-items-center justify-content-center">
+  <div
+    class="row align-items-center justify-content-center"
+    [style.height]="browserHeight$ | async"
+  >
     <app-instrument
       configUrl="/assets/instruments/drumkit/config.json"
       class="d-block"

@@ -15,7 +15,6 @@ export interface InstrumentPart {
 
 export interface Background {
   url: string;
-  file?: {};
   dimensions: Dimensions;
   position: Position;
 }
@@ -33,12 +32,10 @@ export interface Position {
 export interface Note {
   code: string;
   url: string;
-  file?: {};
 }
 
 export interface AnimationConfig {
   url: string;
-  file?: {};
   duration: number;
   frameRate: number;
   frameAmount: number;
