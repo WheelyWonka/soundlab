@@ -85,9 +85,7 @@ export class InstrumentComponent
     instrumentConfigUrl: string,
     instrumentConfig: Instrument
   ): Instrument {
-    const pathPrefix = `${getGithubPagesRootFolderPrefix()}${getInstrumentConfigPath(
-      instrumentConfigUrl
-    )}`;
+    const pathPrefix = `${getInstrumentConfigPath(instrumentConfigUrl)}`;
     instrumentConfig.background.url = `${pathPrefix}${instrumentConfig.background.url}`;
     instrumentConfig.parts.forEach((part) => {
       part.animation.url = `${pathPrefix}${part.animation.url}`;

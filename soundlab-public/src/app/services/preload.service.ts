@@ -4,7 +4,10 @@ import { HttpClient } from '@angular/common/http';
 import { map, tap } from 'rxjs/operators';
 import { Instrument, InstrumentPart } from '../classes/Interfaces';
 import { BehaviorSubject, Observable, zip } from 'rxjs';
-import { getInstrumentConfigPath } from '../shared/Helpers';
+import {
+  getGithubPagesRootFolderPrefix,
+  getInstrumentConfigPath,
+} from '../shared/Helpers';
 declare const createjs: any;
 
 @Injectable({
@@ -36,7 +39,7 @@ export class PreloadService {
 
     return zip(
       ...instrumentConfigsUrls.map((url) =>
-        this.httpClient.get(url).pipe(
+        this.httpClient.get(`${getGithubPagesRootFolderPrefix()}/${url}`).pipe(
           // Get all links from the given instrument config.
           map((instrumentConfig) =>
             this.flattenUrlsFromInstrumentConfig(
@@ -74,7 +77,7 @@ export class PreloadService {
     ]);
     const pathPrefix = getInstrumentConfigPath(instrumentConfigUrl);
     const uniqueUrlsPrefixed = Array.from(uniqueUrlsSet).map(
-      (url) => `/${pathPrefix}${url}`
+      (url) => `${getGithubPagesRootFolderPrefix()}/${pathPrefix}${url}`
     );
     return uniqueUrlsPrefixed;
   }

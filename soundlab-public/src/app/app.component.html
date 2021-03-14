@@ -3,6 +3,7 @@
     {{ preloadProgress$ | async }}
   </div>
   <div
+    *ngIf="(preloadProgress$ | async) === 1"
     class="row align-items-center justify-content-center"
     [style.height]="browserHeight$ | async"
   >

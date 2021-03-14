@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { PreloadService } from './services/preload.service';
 import { fromEvent } from 'rxjs';
-import { map, pluck, startWith, tap } from 'rxjs/operators';
+import { map, startWith } from 'rxjs/operators';
 import { getGithubPagesRootFolderPrefix } from './shared/Helpers';
 
 @Component({
