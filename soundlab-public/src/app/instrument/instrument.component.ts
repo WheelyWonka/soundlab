@@ -1,4 +1,11 @@
-import { AfterViewInit, Component, Input, OnInit } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  Input,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { Instrument, InstrumentPart } from '../classes/Interfaces';
 import { fromEvent, interval, merge, Observable, Subscription } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
@@ -25,6 +32,8 @@ export class InstrumentComponent
   extends Unsubscriber
   implements OnInit, AfterViewInit {
   @Input() configUrl: string | undefined;
+
+  @ViewChild('container', { static: false }) container: ElementRef | undefined;
 
   instrument$ = new Observable<Instrument>();
 
@@ -115,7 +124,7 @@ export class InstrumentComponent
           part.notes.forEach(
             (note) => (this.audios[note.code] = new Audio(note.url))
           );
-          this.subscribeToTriggers(part);
+          this.subscribeToTriggers(instrument, part);
           return part;
         })
       ),
@@ -127,7 +136,10 @@ export class InstrumentComponent
    * Subscribe to triggers (clicks and keys) for the given instrument part
    * and launch the animation when trigger happens.
    */
-  private subscribeToTriggers(instrumentPart: InstrumentPart): Subscription {
+  private subscribeToTriggers(
+    instrument: Instrument,
+    instrumentPart: InstrumentPart
+  ): Subscription {
     const element = document.getElementById(instrumentPart.id) as HTMLElement;
     return merge(
       fromEvent(element, 'click'),
@@ -151,7 +163,7 @@ export class InstrumentComponent
             this.playSoundForClick(element);
           }
         }),
-        switchMap(() => this.animation$(element, instrumentPart))
+        switchMap(() => this.animation$(element, instrument, instrumentPart))
       )
       .subscribe();
   }
@@ -161,14 +173,19 @@ export class InstrumentComponent
    */
   private animation$(
     element: HTMLElement,
+    instrument: Instrument,
     instrumentPart: InstrumentPart
   ): Observable<number> {
     const frameRate = instrumentPart.animation.frameRate;
     const frameAmount = instrumentPart.animation.frameAmount;
-    const frameWidth = element.clientWidth;
+    const frameWidth =
+      ((this.container as ElementRef).nativeElement.clientWidth *
+        instrumentPart.animation.dimensions.width) /
+      instrument.dimensions.width;
 
     return interval(1000 / frameRate).pipe(
       takeWhile((tick) => tick !== frameAmount),
+      map((tick) => (tick === frameAmount - 1 ? 0 : tick)),
       tap(
         (tick) =>
           (element.style.backgroundPositionX = -(tick * frameWidth) + 'px')

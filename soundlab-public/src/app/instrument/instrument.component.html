@@ -1,17 +1,21 @@
 <div
   *ngIf="instrument$ | async as config"
+  #container
   id="container"
-  [style.width]="config.dimensions.width + 'px'"
-  [style.height]="config.dimensions.height + 'px'"
+  [style.max-width]="config.dimensions.width + 'px'"
+  [style.height]="
+    (container.clientWidth * config.dimensions.height) /
+      config.dimensions.width +
+    'px'
+  "
   [style.background-image]="'url(' + config.background.url + ')'"
   [style.background-position]="
     config.background.position.x + 'px ' + config.background.position.y + 'px'
   "
   [style.background-size]="
-    config.background.dimensions.width +
-    'px ' +
-    config.background.dimensions.height +
-    'px'
+    (container.clientWidth * config.background.dimensions.width) /
+      config.dimensions.width +
+    'px auto'
   "
 >
   <div

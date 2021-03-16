@@ -7,9 +7,10 @@
     class="row align-items-center justify-content-center"
     [style.height]="browserHeight$ | async"
   >
+    <div class="d-flex"></div>
     <app-instrument
       [configUrl]="instruments.drumkit"
-      class="d-block"
+      class="d-flex w-100 justify-content-center"
     ></app-instrument>
   </div>
 </div>
