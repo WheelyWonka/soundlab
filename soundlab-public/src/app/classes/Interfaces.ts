@@ -1,6 +1,7 @@
 import { Observable } from 'rxjs';
 
 export interface Instrument {
+  id: string;
   label: string;
   dimensions: Dimensions;
   background: Background;
@@ -42,3 +43,9 @@ export interface AnimationConfig {
   dimensions: Dimensions;
   position: Position;
 }
+
+export type NotesMatrix = {
+  [instrumentId in string]: {
+    [instrumentPartId in string]: boolean[];
+  };
+};

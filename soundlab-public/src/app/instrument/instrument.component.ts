@@ -22,6 +22,7 @@ import {
   tap,
 } from 'rxjs/operators';
 import { getInstrumentConfigPath } from '../shared/Helpers';
+import { SequencerService } from '../services/sequencer.service';
 
 @Component({
   selector: 'app-instrument',
@@ -55,7 +56,10 @@ export class InstrumentComponent
    */
   private readonly keyUps$ = fromEvent(document, 'keyup');
 
-  constructor(private httpClient: HttpClient) {
+  constructor(
+    private httpClient: HttpClient,
+    private sequencerService: SequencerService
+  ) {
     super();
   }
 
@@ -63,7 +67,7 @@ export class InstrumentComponent
     if (!this.configUrl) throw new Error('No config found for instrument');
 
     // Build instrument with the loaded config
-    this.instrument$ = this.loadConfig(this.configUrl);
+    this.loadConfig(this.configUrl);
   }
 
   ngAfterViewInit(): void {
@@ -73,14 +77,17 @@ export class InstrumentComponent
   /**
    * Load config and convert it to a InstrumentConfig typed object
    */
-  private loadConfig(configUrl: string): Observable<Instrument> {
+  private loadConfig(configUrl: string): void {
     // Todo: Why http get is trigger twice ??
-    return this.httpClient.get(configUrl as string).pipe(
+    this.instrument$ = this.httpClient.get(configUrl as string).pipe(
       map((instrumentConfig) =>
         this.getInstrumentConfigWithPrefixedUrl(
           configUrl,
           instrumentConfig as Instrument
         )
+      ),
+      tap((instrument) =>
+        this.sequencerService.addInstrument$.next(instrument)
       ),
       take(1)
     );

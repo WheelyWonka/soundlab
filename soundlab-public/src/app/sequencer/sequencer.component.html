@@ -1,0 +1,24 @@
+<button (click)="resumeSequencer()">play</button>
+<button (click)="pauseSequencer()">pause</button>
+<input type="number" min="4" max="16" [(ngModel)]="notesAmount" />
+<input
+  type="number"
+  min="4"
+  max="260"
+  [(ngModel)]="tempo"
+  (ngModelChange)="changeTempo()"
+/>
+<ul
+  class="d-flex w-100 list-unstyled flex-column justify-content-center align-items-center"
+>
+  <li *ngFor="let instrument of instruments$ | async" class="d-block">
+    <ul
+      *ngFor="let part of instrument.parts"
+      class="d-flex list-unstyled flex-row"
+    >
+      <li *ngFor="let note of notesArray(notesAmount)">
+        <input type="checkbox" />
+      </li>
+    </ul>
+  </li>
+</ul>
