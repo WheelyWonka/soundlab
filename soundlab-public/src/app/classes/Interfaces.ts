@@ -49,3 +49,15 @@ export type NotesMatrix = {
     [instrumentPartId in string]: boolean[];
   };
 };
+
+export interface SequencerConfig {
+  hitsPerBar: number;
+  bars: number;
+  tempo: number;
+  currentStep: Step;
+}
+
+export interface Step {
+  hit: number;
+  bar: number;
+}

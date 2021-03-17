@@ -45,8 +45,9 @@ export class InstrumentComponent
    */
   private readonly keyDowns$ = fromEvent(document, 'keydown').pipe(
     map((event) => {
-      event.preventDefault();
-      event.stopPropagation();
+      // Todo: Prevent default only for registered keys
+      // event.preventDefault();
+      // event.stopPropagation();
       return event;
     })
   );

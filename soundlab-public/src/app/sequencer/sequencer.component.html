@@ -1,24 +1,157 @@
-<button (click)="resumeSequencer()">play</button>
-<button (click)="pauseSequencer()">pause</button>
-<input type="number" min="4" max="16" [(ngModel)]="notesAmount" />
-<input
-  type="number"
-  min="4"
-  max="260"
-  [(ngModel)]="tempo"
-  (ngModelChange)="changeTempo()"
-/>
-<ul
-  class="d-flex w-100 list-unstyled flex-column justify-content-center align-items-center"
->
-  <li *ngFor="let instrument of instruments$ | async" class="d-block">
-    <ul
-      *ngFor="let part of instrument.parts"
-      class="d-flex list-unstyled flex-row"
+<div class="container-fluid" *ngIf="sequencerStep$ | async as sequencerStep">
+  <!--
+  Controls
+-->
+  <div class="row justify-content-center mb-3">
+    <div
+      class="col-12 col-lg-8 col-xl-6 d-flex flex-row align-items-center justify-content-center"
     >
-      <li *ngFor="let note of notesArray(notesAmount)">
-        <input type="checkbox" />
-      </li>
-    </ul>
-  </li>
-</ul>
+      <button (click)="sequencerService.start()" class="mx-2">PLAY</button>
+      <button (click)="sequencerService.stop()" class="mx-2">STOP</button>
+    </div>
+  </div>
+  <div class="row justify-content-center">
+    <div
+      class="col-12 col-lg-8 col-xl-6 d-flex flex-row align-items-center justify-content-center"
+    >
+      <label class="mx-2">
+        <p class="m-0">Hits per bar:</p>
+        <input
+          type="number"
+          min="4"
+          step="2"
+          max="16"
+          [(ngModel)]="sequencerService.config.hitsPerBar"
+          (ngModelChange)="sequencerService.updateConfig$.next()"
+        />
+      </label>
+
+      <label class="mx-2">
+        <p class="m-0">Bars:</p>
+        <input
+          type="number"
+          min="1"
+          step="1"
+          max="8"
+          [(ngModel)]="sequencerService.config.bars"
+        />
+      </label>
+
+      <label class="mx-2">
+        <p class="m-0">BPM:</p>
+        <input
+          type="number"
+          min="4"
+          max="260"
+          [(ngModel)]="sequencerService.config.tempo"
+          (ngModelChange)="sequencerService.updateConfig$.next()"
+        />
+      </label>
+    </div>
+  </div>
+  <!--
+    / Controls
+  -->
+
+  <div class="row justify-content-center">
+    <div class="col-12 d-flex justify-content-center">
+      <ul
+        class="d-flex w-100 list-unstyled flex-column justify-content-center align-items-center"
+      >
+        <li *ngFor="let instrument of instruments$ | async" class="d-block">
+          <!--
+            Tempo
+          -->
+          <ul class="d-flex list-unstyled flex-row">
+            <li
+              *ngFor="
+                let bar of numberArray(sequencerService.config.bars);
+                let i = index
+              "
+              class="d-block"
+              [class.ml-0]="i === 0"
+              [class.ml-1]="i !== 0"
+              [class.border-right-dashed]="
+                i !== numberArray(sequencerService.config.bars).length - 1
+              "
+              [class.pr-0]="
+                i === numberArray(sequencerService.config.bars).length - 1
+              "
+              [class.pr-1]="
+                i !== numberArray(sequencerService.config.bars).length - 1
+              "
+            >
+              <ul class="d-flex list-unstyled flex-row">
+                <li
+                  *ngFor="
+                    let hit of numberArray(sequencerService.config.hitsPerBar);
+                    let i = index
+                  "
+                >
+                  <input
+                    type="checkbox"
+                    checked
+                    disabled
+                    class="invisible"
+                    [class.visible]="
+                      !(i % (sequencerService.config.hitsPerBar / 4))
+                    "
+                  />
+                </li>
+              </ul>
+            </li>
+          </ul>
+          <!--
+            /Tempo
+          -->
+
+          <!--
+            Instruments parts
+          -->
+          <ul
+            *ngFor="let part of instrument.parts"
+            class="d-flex list-unstyled flex-row"
+          >
+            <li
+              *ngFor="
+                let bar of numberArray(sequencerService.config.bars);
+                let i = index
+              "
+              class="d-block"
+              [class.ml-0]="i === 0"
+              [class.ml-1]="i !== 0"
+              [class.border-right-dashed]="
+                i !== numberArray(sequencerService.config.bars).length - 1
+              "
+              [class.pr-0]="
+                i === numberArray(sequencerService.config.bars).length - 1
+              "
+              [class.pr-1]="
+                i !== numberArray(sequencerService.config.bars).length - 1
+              "
+            >
+              <ul class="d-flex list-unstyled flex-row">
+                <li
+                  *ngFor="
+                    let hit of numberArray(sequencerService.config.hitsPerBar);
+                    let j = index
+                  "
+                >
+                  <input
+                    type="checkbox"
+                    [class.active]="
+                      sequencerStep.hit === j + 1 && sequencerStep.bar === i + 1
+                    "
+                  />
+                </li>
+              </ul>
+            </li>
+          </ul>
+          <!--
+            / Instruments parts
+          -->
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

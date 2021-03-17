@@ -1,60 +1,32 @@
-import { Component, OnInit } from '@angular/core';
-import * as Tone from 'tone';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { SequencerService } from '../services/sequencer.service';
+import { Unsubscriber } from '../classes/Unsubscriber';
+import { tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { NotesMatrix } from '../classes/Interfaces';
-import { map } from 'rxjs/operators';
+import { Step } from '../classes/Interfaces';
 
 @Component({
   selector: 'app-sequencer',
   templateUrl: './sequencer.component.html',
   styleUrls: ['./sequencer.component.less'],
 })
-export class SequencerComponent implements OnInit {
+export class SequencerComponent extends Unsubscriber implements OnInit {
   readonly instruments$ = this.sequencerService.instrument$;
 
-  notesAmount = 8;
-  tempo = 120;
-  step = 0;
+  readonly sequencerStep$: Observable<Step> = this.sequencerService.step$.pipe(
+    tap(() => this.cdr.detectChanges())
+  );
 
-  // notes = this.instruments$.pipe(
-  //   map(instruments => {
-  //     return {
-  //       [instrument.id] =
-  //     }
-  //   })
-  // )
-
-  constructor(private sequencerService: SequencerService) {
-    Tone.Transport.bpm.value = this.tempo;
-    Tone.Transport.scheduleRepeat(
-      this.repeat.bind(this),
-      `${this.notesAmount}n`
-    );
+  constructor(
+    public sequencerService: SequencerService,
+    private cdr: ChangeDetectorRef
+  ) {
+    super();
   }
 
   ngOnInit(): void {}
 
-  buildNotesMatrix(): void {}
-
-  private repeat(timeSpent: number): void {
-    console.log(this.step % this.notesAmount);
-    this.step++;
-  }
-
-  notesArray(n: number): any[] {
+  numberArray(n: number): any[] {
     return Array(n);
-  }
-
-  resumeSequencer(): void {
-    Tone.Transport.start();
-  }
-
-  pauseSequencer(): void {
-    Tone.Transport.pause();
-  }
-
-  changeTempo(): void {
-    Tone.Transport.bpm.value = this.tempo;
   }
 }
