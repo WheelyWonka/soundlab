@@ -16,6 +16,8 @@ export class AppComponent {
     drumkit: `${getGithubPagesRootFolderPrefix()}/assets/instruments/drumkit/config.json`,
   };
 
+  hideSequencer = true;
+
   readonly preloadProgress$ = this.preloadService.progress;
 
   readonly browserHeight$ = fromEvent(window, 'resize').pipe(

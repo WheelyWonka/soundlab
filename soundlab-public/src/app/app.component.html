@@ -12,7 +12,9 @@
         [configUrl]="instruments.drumkit"
         class="d-flex w-100 justify-content-center"
       ></app-instrument>
-      <app-sequencer></app-sequencer>
+      <app-sequencer [class.d-none]="hideSequencer"></app-sequencer>
     </div>
   </div>
 </div>
+
+<div id="toggleSequencer" (click)="hideSequencer = !hideSequencer"></div>
