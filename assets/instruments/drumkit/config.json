@@ -16,27 +16,281 @@
       "y": 0
     }
   },
-  "parts": [{
-  "id": "shaker",
-  "notes": [{
-    "code": "q",
-    "url": "sounds/shaker.wav"
-  }],
-  "animation": {
-    "url": "images/shaker.png",
-    "duration": 1000,
-    "frameRate": 24,
-    "frameAmount": 24,
-    "dimensions": {
-      "width": 86.5,
-      "height": 69.5
+  "partsObj": {
+    "bubble-shaker": {
+      "id": "bubble-shaker",
+      "notes": [{
+        "code": "q",
+        "url": "sounds/bubble-shaker.wav"
+      }],
+      "animation": {
+        "url": "images/bubble-shaker.png",
+        "duration": 1000,
+        "frameRate": 24,
+        "frameAmount": 24,
+        "dimensions": {
+          "width": 86.5,
+          "height": 69.5
+        },
+        "position": {
+          "x": 178,
+          "y": 539
+        }
+      }
     },
-    "position": {
-      "x": 178,
-      "y": 539
+    "bubble-click": {
+      "id": "bubble-click",
+      "notes": [{
+        "code": "w",
+        "url": "sounds/bubble-click.wav"
+      }],
+      "animation": {
+        "url": "images/bubble-click.png",
+        "duration": 1000,
+        "frameRate": 24,
+        "frameAmount": 24,
+        "dimensions": {
+          "width": 102.5,
+          "height": 315
+        },
+        "position": {
+          "x": 39,
+          "y": 299
+        }
+      }
+    },
+    "confetti": {
+      "id": "confetti",
+      "notes": [{
+        "code": "e",
+        "url": "sounds/confetti.wav"
+      }],
+      "animation": {
+        "url": "images/confetti.png",
+        "duration": 1000,
+        "frameRate": 24,
+        "frameAmount": 24,
+        "dimensions": {
+          "width": 167,
+          "height": 88
+        },
+        "position": {
+          "x": 268,
+          "y": 547
+        }
+      }
+    },
+    "shaker": {
+      "id": "shaker",
+      "notes": [{
+        "code": "r",
+        "url": "sounds/shaker.wav"
+      }],
+      "animation": {
+        "url": "images/shaker.png",
+        "duration": 1000,
+        "frameRate": 24,
+        "frameAmount": 24,
+        "dimensions": {
+          "width": 177,
+          "height": 165.5
+        },
+        "position": {
+          "x": 105,
+          "y": 515
+        }
+      }
+    },
+    "kick": {
+      "id": "kick",
+      "notes": [{
+        "code": "a",
+        "url": "sounds/kick.wav"
+      }],
+      "animation": {
+        "url": "images/kick.png",
+        "duration": 1000,
+        "frameRate": 24,
+        "frameAmount": 24,
+        "dimensions": {
+          "width": 195,
+          "height": 188
+        },
+        "position": {
+          "x": 63,
+          "y": 376
+        }
+      }
+    },
+    "ding-bell": {
+      "id": "ding-bell",
+      "notes": [{
+        "code": "s",
+        "url": "sounds/ding-bell.wav"
+      }],
+      "animation": {
+        "url": "images/ding-bell.png",
+        "duration": 1000,
+        "frameRate": 24,
+        "frameAmount": 24,
+        "dimensions": {
+          "width": 116,
+          "height": 141
+        },
+        "position": {
+          "x": 75,
+          "y": 556
+        }
+      }
+    },
+    "balloon": {
+      "id": "balloon",
+      "notes": [{
+        "code": "d",
+        "url": "sounds/balloon.wav"
+      }],
+      "animation": {
+        "url": "images/balloon.png",
+        "duration": 1000,
+        "frameRate": 24,
+        "frameAmount": 24,
+        "dimensions": {
+          "width": 65,
+          "height": 66
+        },
+        "position": {
+          "x": 266,
+          "y": 444
+        }
+      }
+    },
+    "cube": {
+      "id": "cube",
+      "notes": [{
+        "code": "f",
+        "url": "sounds/cube.wav"
+      }],
+      "animation": {
+        "url": "images/cube.png",
+        "duration": 1000,
+        "frameRate": 24,
+        "frameAmount": 24,
+        "dimensions": {
+          "width": 63.5,
+          "height": 63
+        },
+        "position": {
+          "x": 310,
+          "y": 401
+        }
+      }
+    },
+    "tube-bass": {
+      "id": "tube-bass",
+      "notes": [{
+        "code": "z",
+        "url": "sounds/tube-bass.wav"
+      }],
+      "animation": {
+        "url": "images/tube-bass.png",
+        "duration": 1000,
+        "frameRate": 24,
+        "frameAmount": 24,
+        "dimensions": {
+          "width": 341,
+          "height": 191
+        },
+        "position": {
+          "x": 170,
+          "y": 0
+        }
+      }
+    },
+    "tube-medium": {
+      "id": "tube-medium",
+      "notes": [{
+        "code": "x",
+        "url": "sounds/tube-medium.wav"
+      }],
+      "animation": {
+        "url": "images/tube-medium.png",
+        "duration": 1000,
+        "frameRate": 24,
+        "frameAmount": 24,
+        "dimensions": {
+          "width": 75,
+          "height": 141.5
+        },
+        "position": {
+          "x": 115,
+          "y": 320
+        }
+      }
+    },
+    "tube-high": {
+      "id": "tube-high",
+      "notes": [{
+        "code": "c",
+        "url": "sounds/tube-high.wav"
+      }],
+      "animation": {
+        "url": "images/tube-high.png",
+        "duration": 1000,
+        "frameRate": 24,
+        "frameAmount": 24,
+        "dimensions": {
+          "width": 42,
+          "height": 264
+        },
+        "position": {
+          "x": 0,
+          "y": 375
+        }
+      }
+    },
+    "ping-pong": {
+      "id": "ping-pong",
+      "notes": [{
+        "code": "v",
+        "url": "sounds/ping-pong.wav"
+      }],
+      "animation": {
+        "url": "images/ping-pong.png",
+        "duration": 1000,
+        "frameRate": 24,
+        "frameAmount": 24,
+        "dimensions": {
+          "width": 464.5,
+          "height": 219.5
+        },
+        "position": {
+          "x": 117,
+          "y": 495
+        }
+      }
     }
-  }
-},{
+  },
+  "parts": [{
+    "id": "bubble-shaker",
+    "notes": [{
+      "code": "q",
+      "url": "sounds/bubble-shaker.wav"
+    }],
+    "animation": {
+      "url": "images/bubble-shaker.png",
+      "duration": 1000,
+      "frameRate": 24,
+      "frameAmount": 24,
+      "dimensions": {
+        "width": 86.5,
+        "height": 69.5
+      },
+      "position": {
+        "x": 178,
+        "y": 539
+      }
+    }
+  },{
     "id": "kick",
     "notes": [{
       "code": "a",
