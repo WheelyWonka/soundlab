@@ -23,6 +23,7 @@ import {
 } from 'rxjs/operators';
 import { getInstrumentConfigPath } from '../shared/Helpers';
 import { SequencerService } from '../services/sequencer.service';
+import * as Tone from 'tone';
 
 @Component({
   selector: 'app-instrument',
@@ -32,13 +33,16 @@ import { SequencerService } from '../services/sequencer.service';
 export class InstrumentComponent
   extends Unsubscriber
   implements OnInit, AfterViewInit {
+  ObjectValues = Object.values;
+
   @Input() configUrl: string | undefined;
 
   @ViewChild('container', { static: false }) container: ElementRef | undefined;
 
   instrument$ = new Observable<Instrument>();
+  instrument = {};
 
-  private audios: { [key in string]: HTMLAudioElement } = {};
+  private audios: { [key in string]: Tone.Player } = {};
 
   /**
    * Capture key down events and stop propagation of them
@@ -87,9 +91,10 @@ export class InstrumentComponent
           instrumentConfig as Instrument
         )
       ),
-      tap((instrument) =>
-        this.sequencerService.addInstrument$.next(instrument)
-      ),
+      tap((instrument) => {
+        this.instrument = instrument;
+        this.sequencerService.addInstrument$.next(instrument);
+      }),
       take(1)
     );
   }
@@ -103,7 +108,7 @@ export class InstrumentComponent
   ): Instrument {
     const pathPrefix = `${getInstrumentConfigPath(instrumentConfigUrl)}`;
     instrumentConfig.background.url = `${pathPrefix}${instrumentConfig.background.url}`;
-    instrumentConfig.parts.forEach((part) => {
+    Object.values(instrumentConfig.partsObj).forEach((part) => {
       part.animation.url = `${pathPrefix}${part.animation.url}`;
       part.notes.forEach((note) => {
         note.url = `${pathPrefix}${note.url}`;
@@ -127,10 +132,13 @@ export class InstrumentComponent
     return this.instrument$.pipe(
       debounceTime(1),
       map((instrument) =>
-        instrument.parts.map((part) => {
+        Object.values(instrument.partsObj).map((part) => {
           // Add notes to the audios library.
           part.notes.forEach(
-            (note) => (this.audios[note.code] = new Audio(note.url))
+            (note) =>
+              (this.audios[note.code] = new Tone.Player(
+                note.url
+              ).toDestination())
           );
           this.subscribeToTriggers(instrument, part);
           return part;
@@ -151,6 +159,7 @@ export class InstrumentComponent
     const element = document.getElementById(instrumentPart.id) as HTMLElement;
     return merge(
       fromEvent(element, 'click'),
+      this.sequencerService.hits[instrument.id][instrumentPart.id],
       ...instrumentPart.notes.map((note) =>
         merge(this.keyDowns$, this.keyUps$).pipe(
           map((event) => event as KeyboardEvent),
@@ -163,12 +172,12 @@ export class InstrumentComponent
       )
     )
       .pipe(
-        map((event) => event as KeyboardEvent),
-        tap((event) => {
-          if (event.key) {
+        map((event) => (event as KeyboardEvent) || null),
+        tap((event?: KeyboardEvent) => {
+          if (event?.key) {
             this.playSoundForKey(event.key);
           } else {
-            this.playSoundForClick(element);
+            this.playSoundForPartId(instrumentPart.id);
           }
         }),
         switchMap(() => this.animation$(element, instrument, instrumentPart))
@@ -206,9 +215,8 @@ export class InstrumentComponent
    */
   private playSoundForKey(key: string): void {
     if (this.audios[key]) {
-      this.audios[key].pause();
-      this.audios[key].currentTime = 0;
-      this.audios[key].play();
+      //this.audios[key].stop();
+      this.audios[key].start();
     }
   }
 
@@ -216,14 +224,42 @@ export class InstrumentComponent
    * One day it will use octave setting to target the right note but for now we
    * will trigger the first sound available for the given element.
    */
-  private playSoundForClick(element: HTMLElement): void {
-    this.instrument$
-      .pipe(
-        map((instrument) => instrument.parts),
-        map((parts) => parts.find((part) => part.id === element.id)),
-        tap((part) => (part ? this.playSoundForKey(part.notes[0].code) : null)),
-        take(1)
-      )
-      .subscribe();
+  private playSoundForPartId(partId: string): void {
+    const instrument: Instrument = this.instrument as Instrument;
+    this.playSoundForKey(instrument.partsObj[partId].notes[0].code);
+    // this.instrument$
+    //   .pipe(
+    //     map((instrument) => instrument.partsObj),
+    //     tap((partsObj) =>
+    //       partsObj[partId] &&
+    //       partsObj[partId].notes &&
+    //       partsObj[partId].notes.length
+    //         ? this.playSoundForKey(partsObj[partId].notes[0].code)
+    //         : null
+    //     ),
+    //     take(1)
+    //   )
+    //   .subscribe();
   }
+
+  // private async getFile(filepath: string): Promise<AudioBuffer> {
+  //   const response = await fetch(filepath);
+  //   const arrayBuffer = await response.arrayBuffer();
+  //   const audioBuffer = await this.audioCtx.decodeAudioData(arrayBuffer);
+  //   return audioBuffer;
+  // }
+  //
+  // private async setupSample(): Promise<any> {
+  //   const filePath = 'dtmf.mp3';
+  //   const sample = await this.getFile(filePath);
+  //   return sample;
+  // }
+  //
+  // private playSample(audioBuffer: AudioBuffer): AudioBufferSourceNode {
+  //   const sampleSource = this.audioCtx.createBufferSource();
+  //   sampleSource.buffer = audioBuffer;
+  //   sampleSource.connect(this.audioCtx.destination);
+  //   sampleSource.start();
+  //   return sampleSource;
+  // }
 }

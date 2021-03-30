@@ -6,6 +6,9 @@ export interface Instrument {
   dimensions: Dimensions;
   background: Background;
   parts: InstrumentPart[];
+  partsObj: {
+    [instrumentId in string]: InstrumentPart;
+  };
 }
 
 export interface InstrumentPart {
@@ -43,13 +46,6 @@ export interface AnimationConfig {
   dimensions: Dimensions;
   position: Position;
 }
-
-export type NotesMatrix = {
-  [instrumentId in string]: {
-    [instrumentPartId in string]: boolean[];
-  };
-};
-
 export interface SequencerConfig {
   hitsPerBar: number;
   bars: number;
@@ -61,3 +57,13 @@ export interface Step {
   hit: number;
   bar: number;
 }
+
+export type PadsIndex = {
+  [instrumentId in string]: {
+    [instrumentPartId in string]: {
+      [bar in number]: {
+        [hit in number]: boolean;
+      };
+    };
+  };
+};

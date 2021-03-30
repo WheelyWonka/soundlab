@@ -4,8 +4,10 @@ import { Instrument, SequencerConfig, Step } from '../classes/Interfaces';
 import {
   debounceTime,
   distinct,
+  map,
   scan,
   shareReplay,
+  startWith,
   takeUntil,
   tap,
 } from 'rxjs/operators';
@@ -42,15 +44,28 @@ export class SequencerService extends Unsubscriber {
   /**
    * Stores all registered instruments
    */
-  readonly instrument$ = this.addInstrument$.pipe(
+  readonly instruments$ = this.addInstrument$.pipe(
     distinct((instrument: Instrument) => instrument.id),
-    scan(
-      (instruments: Instrument[], instrument) => instruments.concat(instrument),
-      []
-    ),
+    scan((instruments: Instrument[], instrument) => {
+      this.hits[instrument.id] = Object.values(instrument.partsObj).reduce(
+        (parts, part) => ({ ...parts, [part.id]: new Subject() }),
+        {}
+      );
+      return instruments.concat(instrument);
+    }, []),
+    tap(() => console.log(this.hits)),
     takeUntil(this.unsubscribe$),
-    shareReplay()
+    shareReplay(1)
   );
+
+  /**
+   * Hits on all instrument's parts
+   */
+  readonly hits: {
+    [instrumentId in string]: {
+      [instrumentPartId in string]: Subject<void>;
+    };
+  } = {};
 
   /**
    * Config updates stream.
@@ -63,7 +78,10 @@ export class SequencerService extends Unsubscriber {
   readonly configUpdated$ = this.updateConfig$.pipe(
     debounceTime(200),
     tap(() => this.updateConfig()),
-    takeUntil(this.unsubscribe$)
+    map(() => this.config),
+    takeUntil(this.unsubscribe$),
+    startWith(this.config),
+    shareReplay(1)
   );
 
   readonly step$ = new BehaviorSubject<Step>(this.config.currentStep);
@@ -79,7 +97,7 @@ export class SequencerService extends Unsubscriber {
   private init(): void {
     if (!this.userAction) Tone.start();
     Tone.Transport.scheduleRepeat(
-      this.hit.bind(this),
+      this.metronome.bind(this),
       `${this.config.hitsPerBar}n`
     );
   }
@@ -115,15 +133,15 @@ export class SequencerService extends Unsubscriber {
   /**
    * Sequencer handler
    */
-  private hit(timeSpent: number): void {
+  private metronome(timeSpent: number): void {
     this.step$.next(this.config.currentStep);
-    this.updateStep();
+    this.updateCurrentStep();
   }
 
   /**
    * Update sequencer's step
    */
-  private updateStep(): void {
+  private updateCurrentStep(): void {
     if (this.config.currentStep.hit === this.config.hitsPerBar) {
       this.config.currentStep.hit = 1;
       if (this.config.currentStep.bar === this.config.bars) {

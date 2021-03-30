@@ -1,9 +1,20 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { SequencerService } from '../services/sequencer.service';
 import { Unsubscriber } from '../classes/Unsubscriber';
-import { tap } from 'rxjs/operators';
-import { Observable } from 'rxjs';
-import { Step } from '../classes/Interfaces';
+import {
+  map,
+  shareReplay,
+  takeUntil,
+  tap,
+  withLatestFrom,
+} from 'rxjs/operators';
+import {
+  Instrument,
+  PadsIndex,
+  SequencerConfig,
+  Step,
+} from '../classes/Interfaces';
+import { combineLatest, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-sequencer',
@@ -11,10 +22,41 @@ import { Step } from '../classes/Interfaces';
   styleUrls: ['./sequencer.component.less'],
 })
 export class SequencerComponent extends Unsubscriber implements OnInit {
-  readonly instruments$ = this.sequencerService.instrument$;
+  ObjectKeys = Object.keys;
+  toNumber = Number;
 
-  readonly sequencerStep$: Observable<Step> = this.sequencerService.step$.pipe(
-    tap(() => this.cdr.detectChanges())
+  readonly instruments$ = this.sequencerService.instruments$;
+
+  readonly sequencerStep$ = this.sequencerService.step$;
+
+  /**
+   * Pads index stream
+   */
+  padsIndex$: Observable<PadsIndex> = combineLatest([
+    this.sequencerService.configUpdated$,
+    this.instruments$,
+  ]).pipe(
+    map(([sequencerConfig, instruments]) =>
+      this.getPadsIndex(sequencerConfig, instruments)
+    ),
+    shareReplay(1)
+  );
+
+  /**
+   * Force to detect changes to let the view knows the current step.
+   */
+  readonly detectChangesOnActiveStep$ = this.sequencerService.step$.pipe(
+    tap(() => this.cdr.detectChanges()),
+    takeUntil(this.unsubscribe$)
+  );
+
+  /**
+   * Hit checked pads when tick is passing on them
+   */
+  readonly hitPads$ = this.sequencerStep$.pipe(
+    withLatestFrom(this.padsIndex$),
+    tap(([step, padsIndex]) => this.hitPads(step, padsIndex)),
+    takeUntil(this.unsubscribe$)
   );
 
   constructor(
@@ -22,11 +64,61 @@ export class SequencerComponent extends Unsubscriber implements OnInit {
     private cdr: ChangeDetectorRef
   ) {
     super();
+    this.padsIndex$.subscribe();
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.detectChangesOnActiveStep$.subscribe();
+    this.hitPads$.subscribe();
+  }
 
-  numberArray(n: number): any[] {
-    return Array(n);
+  /**
+   * Get pad index for all instruments
+   */
+  private getPadsIndex(
+    sequencerConfig: SequencerConfig,
+    instruments: Instrument[]
+  ): PadsIndex {
+    return instruments.reduce((padsIndex, instrument) => {
+      return {
+        ...padsIndex,
+        [instrument.id]: Object.values(instrument.partsObj).reduce(
+          (partsPadsIndex, instrumentPart) => {
+            return {
+              ...partsPadsIndex,
+              [instrumentPart.id]: this.getPads(sequencerConfig),
+            };
+          },
+          {}
+        ),
+      };
+    }, {});
+  }
+
+  /**
+   * Build pads for the given sequencer config
+   */
+  private getPads(
+    sequencerConfig: SequencerConfig
+  ): {
+    [bar in number]: {
+      [hit in number]: boolean;
+    };
+  } {
+    const hits = Object.assign(
+      {},
+      Array(sequencerConfig.hitsPerBar + 1).fill(false)
+    );
+    delete hits[0];
+
+    const bars = Object.assign({}, Array(sequencerConfig.bars + 1).fill(hits));
+    delete bars[0];
+    // Clone pads to make sure inputs' binding are independent
+    return JSON.parse(JSON.stringify(bars));
+  }
+
+  private hitPads(step: Step, padsIndex: PadsIndex): void {
+    this.sequencerService.hits['drum-kit']['ding-bell'].next();
+    const hits = padsIndex;
   }
 }

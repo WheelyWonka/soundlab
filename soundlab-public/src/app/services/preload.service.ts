@@ -68,8 +68,10 @@ export class PreloadService {
   ): string[] {
     const uniqueUrlsSet = new Set([
       instrumentConfig.background.url,
-      ...instrumentConfig.parts.map((part) => part.animation.url),
-      ...instrumentConfig.parts.reduce(
+      ...Object.values(instrumentConfig.partsObj).map(
+        (part) => part.animation.url
+      ),
+      ...Object.values(instrumentConfig.partsObj).reduce(
         (acc: string[], part: InstrumentPart) =>
           acc.concat(...part.notes.map((note) => note.url)),
         []

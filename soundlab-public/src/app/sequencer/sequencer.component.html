@@ -34,6 +34,7 @@
           step="1"
           max="8"
           [(ngModel)]="sequencerService.config.bars"
+          (ngModelChange)="sequencerService.updateConfig$.next()"
         />
       </label>
 
@@ -52,17 +53,19 @@
   <!--
     / Controls
   -->
-
-  <div class="row justify-content-center">
+  <div
+    class="row justify-content-center"
+    *ngIf="padsIndex$ | async as padsIndex"
+  >
     <div class="col-12 d-flex justify-content-center">
       <ul
         class="d-flex w-100 list-unstyled flex-column justify-content-center align-items-center"
       >
-        <li *ngFor="let instrument of instruments$ | async" class="d-block">
+        <li *ngFor="let instrument of ObjectKeys(padsIndex)" class="d-block">
           <!--
             Tempo
           -->
-          <ul class="d-flex list-unstyled flex-row">
+          <!--<ul class="d-flex list-unstyled flex-row">
             <li
               *ngFor="
                 let bar of numberArray(sequencerService.config.bars);
@@ -100,7 +103,7 @@
                 </li>
               </ul>
             </li>
-          </ul>
+          </ul>-->
           <!--
             /Tempo
           -->
@@ -109,39 +112,48 @@
             Instruments parts
           -->
           <ul
-            *ngFor="let part of instrument.parts"
+            *ngFor="let part of ObjectKeys(padsIndex[instrument])"
             class="d-flex list-unstyled flex-row"
           >
             <li
-              *ngFor="
-                let bar of numberArray(sequencerService.config.bars);
-                let i = index
-              "
+              *ngFor="let bar of ObjectKeys(padsIndex[instrument][part])"
               class="d-block"
-              [class.ml-0]="i === 0"
-              [class.ml-1]="i !== 0"
+              [class.ml-0]="toNumber(bar) === 1"
+              [class.ml-1]="toNumber(bar) !== 1"
               [class.border-right-dashed]="
-                i !== numberArray(sequencerService.config.bars).length - 1
+                toNumber(bar) !== ObjectKeys(padsIndex[instrument][part]).length
               "
               [class.pr-0]="
-                i === numberArray(sequencerService.config.bars).length - 1
+                toNumber(bar) === ObjectKeys(padsIndex[instrument][part]).length
               "
               [class.pr-1]="
-                i !== numberArray(sequencerService.config.bars).length - 1
+                toNumber(bar) !== ObjectKeys(padsIndex[instrument][part]).length
               "
             >
               <ul class="d-flex list-unstyled flex-row">
                 <li
                   *ngFor="
-                    let hit of numberArray(sequencerService.config.hitsPerBar);
-                    let j = index
+                    let hit of ObjectKeys(
+                      padsIndex[instrument][part][toNumber(bar)]
+                    )
                   "
                 >
                   <input
+                    [id]="
+                      'pad_' + instrument + '_' + part + '_' + bar + '_' + hit
+                    "
                     type="checkbox"
                     [class.active]="
-                      sequencerStep.hit === j + 1 && sequencerStep.bar === i + 1
+                      sequencerStep.hit === toNumber(hit) &&
+                      sequencerStep.bar === toNumber(bar)
                     "
+                    [attr.partId]="part"
+                    [attr.bar]="bar"
+                    [attr.hit]="hit"
+                    [(ngModel)]="
+                      padsIndex[instrument][part][toNumber(bar)][toNumber(hit)]
+                    "
+                    [ngModelOptions]="{ standalone: true }"
                   />
                 </li>
               </ul>

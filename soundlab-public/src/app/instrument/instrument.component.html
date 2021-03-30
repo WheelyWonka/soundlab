@@ -1,49 +1,52 @@
 <div
-  *ngIf="instrument$ | async as config"
+  *ngIf="instrument$ | async as instrument"
   #container
   id="container"
-  [style.max-width]="config.dimensions.width + 'px'"
+  [style.max-width]="instrument.dimensions.width + 'px'"
   [style.height]="
-    (container.clientWidth * config.dimensions.height) /
-      config.dimensions.width +
+    (container.clientWidth * instrument.dimensions.height) /
+      instrument.dimensions.width +
     'px'
   "
-  [style.background-image]="'url(' + config.background.url + ')'"
+  [style.background-image]="'url(' + instrument.background.url + ')'"
   [style.background-position]="
-    config.background.position.x + 'px ' + config.background.position.y + 'px'
+    instrument.background.position.x +
+    'px ' +
+    instrument.background.position.y +
+    'px'
   "
   [style.background-size]="
-    (container.clientWidth * config.background.dimensions.width) /
-      config.dimensions.width +
+    (container.clientWidth * instrument.background.dimensions.width) /
+      instrument.dimensions.width +
     'px auto'
   "
 >
   <div
-    *ngFor="let part of config.parts"
+    *ngFor="let part of ObjectValues(instrument.partsObj)"
     class="part"
     [id]="part.id"
     [style.width]="
       convertPixelToPercentage(
         part.animation.dimensions.width,
-        config.dimensions.width
+        instrument.dimensions.width
       )
     "
     [style.height]="
       convertPixelToPercentage(
         part.animation.dimensions.height,
-        config.dimensions.height
+        instrument.dimensions.height
       )
     "
     [style.top]="
       convertPixelToPercentage(
         part.animation.position.x,
-        config.dimensions.height
+        instrument.dimensions.height
       )
     "
     [style.left]="
       convertPixelToPercentage(
         part.animation.position.y,
-        config.dimensions.width
+        instrument.dimensions.width
       )
     "
     [style.background-image]="'url(' + part.animation.url + ')'"
