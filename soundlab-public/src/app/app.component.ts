@@ -16,7 +16,7 @@ export class AppComponent {
     drumkit: `${getGithubPagesRootFolderPrefix()}/assets/instruments/drumkit/config.json`,
   };
 
-  hideSequencer = false;
+  hideSequencer = true;
 
   readonly preloadProgress$ = this.preloadService.progress;
 

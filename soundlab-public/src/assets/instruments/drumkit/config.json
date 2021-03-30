@@ -38,6 +38,69 @@
         }
       }
     },
+    "bubble-click": {
+      "id": "bubble-click",
+      "notes": [{
+        "code": "w",
+        "url": "sounds/bubble-click.wav"
+      }],
+      "animation": {
+        "url": "images/bubble-click.png",
+        "duration": 1000,
+        "frameRate": 24,
+        "frameAmount": 24,
+        "dimensions": {
+          "width": 102.5,
+          "height": 315
+        },
+        "position": {
+          "x": 39,
+          "y": 299
+        }
+      }
+    },
+    "confetti": {
+      "id": "confetti",
+      "notes": [{
+        "code": "e",
+        "url": "sounds/confetti.wav"
+      }],
+      "animation": {
+        "url": "images/confetti.png",
+        "duration": 1000,
+        "frameRate": 24,
+        "frameAmount": 24,
+        "dimensions": {
+          "width": 167,
+          "height": 88
+        },
+        "position": {
+          "x": 268,
+          "y": 547
+        }
+      }
+    },
+    "shaker": {
+      "id": "shaker",
+      "notes": [{
+        "code": "r",
+        "url": "sounds/shaker.wav"
+      }],
+      "animation": {
+        "url": "images/shaker.png",
+        "duration": 1000,
+        "frameRate": 24,
+        "frameAmount": 24,
+        "dimensions": {
+          "width": 177,
+          "height": 165.5
+        },
+        "position": {
+          "x": 105,
+          "y": 515
+        }
+      }
+    },
     "kick": {
       "id": "kick",
       "notes": [{
@@ -101,6 +164,27 @@
         }
       }
     },
+    "cube": {
+      "id": "cube",
+      "notes": [{
+        "code": "f",
+        "url": "sounds/cube.wav"
+      }],
+      "animation": {
+        "url": "images/cube.png",
+        "duration": 1000,
+        "frameRate": 24,
+        "frameAmount": 24,
+        "dimensions": {
+          "width": 63.5,
+          "height": 63
+        },
+        "position": {
+          "x": 310,
+          "y": 401
+        }
+      }
+    },
     "tube-bass": {
       "id": "tube-bass",
       "notes": [{
@@ -161,6 +245,27 @@
         "position": {
           "x": 0,
           "y": 375
+        }
+      }
+    },
+    "ping-pong": {
+      "id": "ping-pong",
+      "notes": [{
+        "code": "v",
+        "url": "sounds/ping-pong.wav"
+      }],
+      "animation": {
+        "url": "images/ping-pong.png",
+        "duration": 1000,
+        "frameRate": 24,
+        "frameAmount": 24,
+        "dimensions": {
+          "width": 464.5,
+          "height": 219.5
+        },
+        "position": {
+          "x": 117,
+          "y": 495
         }
       }
     }
