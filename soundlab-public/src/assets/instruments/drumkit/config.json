@@ -17,27 +17,6 @@
     }
   },
   "partsObj": {
-    "bubble-shaker": {
-      "id": "bubble-shaker",
-      "notes": [{
-        "code": "q",
-        "url": "sounds/bubble-shaker.wav"
-      }],
-      "animation": {
-        "url": "images/bubble-shaker.png",
-        "duration": 1000,
-        "frameRate": 24,
-        "frameAmount": 24,
-        "dimensions": {
-          "width": 86.5,
-          "height": 69.5
-        },
-        "position": {
-          "x": 178,
-          "y": 539
-        }
-      }
-    },
     "bubble-click": {
       "id": "bubble-click",
       "notes": [{
@@ -80,6 +59,48 @@
         }
       }
     },
+    "ding-bell": {
+      "id": "ding-bell",
+      "notes": [{
+        "code": "s",
+        "url": "sounds/ding-bell.wav"
+      }],
+      "animation": {
+        "url": "images/ding-bell.png",
+        "duration": 1000,
+        "frameRate": 24,
+        "frameAmount": 24,
+        "dimensions": {
+          "width": 116,
+          "height": 141
+        },
+        "position": {
+          "x": 75,
+          "y": 556
+        }
+      }
+    },
+    "bubble-shaker": {
+      "id": "bubble-shaker",
+      "notes": [{
+        "code": "q",
+        "url": "sounds/bubble-shaker.wav"
+      }],
+      "animation": {
+        "url": "images/bubble-shaker.png",
+        "duration": 1000,
+        "frameRate": 24,
+        "frameAmount": 24,
+        "dimensions": {
+          "width": 86.5,
+          "height": 69.5
+        },
+        "position": {
+          "x": 178,
+          "y": 524
+        }
+      }
+    },
     "shaker": {
       "id": "shaker",
       "notes": [{
@@ -119,27 +140,6 @@
         "position": {
           "x": 63,
           "y": 376
-        }
-      }
-    },
-    "ding-bell": {
-      "id": "ding-bell",
-      "notes": [{
-        "code": "s",
-        "url": "sounds/ding-bell.wav"
-      }],
-      "animation": {
-        "url": "images/ding-bell.png",
-        "duration": 1000,
-        "frameRate": 24,
-        "frameAmount": 24,
-        "dimensions": {
-          "width": 116,
-          "height": 141
-        },
-        "position": {
-          "x": 75,
-          "y": 556
         }
       }
     },

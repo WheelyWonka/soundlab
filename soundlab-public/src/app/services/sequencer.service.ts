@@ -53,7 +53,6 @@ export class SequencerService extends Unsubscriber {
       );
       return instruments.concat(instrument);
     }, []),
-    tap(() => console.log(this.hits)),
     takeUntil(this.unsubscribe$),
     shareReplay(1)
   );

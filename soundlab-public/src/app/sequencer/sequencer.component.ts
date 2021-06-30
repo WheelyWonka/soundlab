@@ -119,6 +119,7 @@ export class SequencerComponent extends Unsubscriber implements OnInit {
 
   private hitPads(step: Step, padsIndex: PadsIndex): void {
     this.sequencerService.hits['drum-kit']['ding-bell'].next();
+    // this.sequencerService.hits['drum-kit']['shaker'].next();
     const hits = padsIndex;
   }
 }

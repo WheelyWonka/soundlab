@@ -15,6 +15,7 @@ import {
   distinctUntilChanged,
   filter,
   map,
+  share,
   switchMap,
   take,
   takeUntil,
@@ -85,6 +86,7 @@ export class InstrumentComponent
   private loadConfig(configUrl: string): void {
     // Todo: Why http get is trigger twice ??
     this.instrument$ = this.httpClient.get(configUrl as string).pipe(
+      // take(1),
       map((instrumentConfig) =>
         this.getInstrumentConfigWithPrefixedUrl(
           configUrl,
@@ -92,10 +94,10 @@ export class InstrumentComponent
         )
       ),
       tap((instrument) => {
+        console.log('fuck you');
         this.instrument = instrument;
         this.sequencerService.addInstrument$.next(instrument);
-      }),
-      take(1)
+      })
     );
   }
 
@@ -216,7 +218,7 @@ export class InstrumentComponent
   private playSoundForKey(key: string): void {
     if (this.audios[key]) {
       //this.audios[key].stop();
-      this.audios[key].start();
+      this.audios[key].start(0);
     }
   }
 
